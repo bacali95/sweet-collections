@@ -1,1 +1,2 @@
-# Sweet Collections
+# Sweet Collections 
+![Coverage](coverage/badge.svg)

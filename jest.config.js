@@ -9,4 +9,5 @@ module.exports = {
         },
     },
     roots: ['test'],
+    coverageReporters: ['json-summary'],
 };
