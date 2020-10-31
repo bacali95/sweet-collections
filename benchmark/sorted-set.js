@@ -1,34 +1,34 @@
-const Sorted = require('../dist').SortedSet;
-const SortedSet = require('collections/sorted-set');
-const { getData } = require('./utils');
+const SweetSortedSet = require('../dist').SortedSet;
+const SortedSetJs = require('collections/sorted-set');
 
-let sortedSet = new SortedSet({}, undefined, (a, b) => a - b);
-let sortedSet1 = new Sorted((a, b) => a - b);
-let data = getData();
-let entries = Object.entries(data).slice(0, 500000);
+module.exports = (values) => {
+    console.log('---------------------- SortedSet ----------------------');
+    let sortedSetJs = new SortedSetJs({}, undefined, (a, b) => a - b);
+    let sweetSortedSet = new SweetSortedSet((a, b) => a - b);
 
-console.log('Setting:');
-let date = Date.now();
-for (const [key, value] of entries) {
-    sortedSet.add(value);
-}
-console.log(`CollectionsJs: ${Date.now() - date}ms`);
+    console.log('Adding:');
+    let date = Date.now();
+    for (const value of values) {
+        sortedSetJs.add(value);
+    }
+    console.log(`CollectionsJs: ${Date.now() - date}ms`);
 
-date = Date.now();
-for (const [key, value] of entries) {
-    sortedSet1.add(value);
-}
-console.log(`CollectionsTs: ${Date.now() - date}ms`);
+    date = Date.now();
+    for (const value of values) {
+        sweetSortedSet.add(value);
+    }
+    console.log(`SweetCollections: ${Date.now() - date}ms`);
 
-console.log('\nGetting:');
-date = Date.now();
-for (const [key, value] of entries) {
-    sortedSet.has(value);
-}
-console.log(`CollectionsJs: ${Date.now() - date}ms`);
+    console.log('\nTest Having:');
+    date = Date.now();
+    for (const value of values) {
+        sortedSetJs.has(value);
+    }
+    console.log(`CollectionsJs: ${Date.now() - date}ms`);
 
-date = Date.now();
-for (const [key, value] of entries) {
-    sortedSet1.has(value);
-}
-console.log(`CollectionsTs: ${Date.now() - date}ms`);
+    date = Date.now();
+    for (const value of values) {
+        sweetSortedSet.has(value);
+    }
+    console.log(`SweetCollections: ${Date.now() - date}ms`);
+};

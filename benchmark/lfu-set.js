@@ -1,34 +1,34 @@
-const Lfu = require('../dist').LfuSet;
-const LfuSet = require('collections/lfu-set');
-const { getData } = require('./utils');
+const SweetLfuSet = require('../dist').LfuSet;
+const LfuSetJs = require('collections/lfu-set');
 
-let lfuSet = new LfuSet({}, 10000);
-let lfuSet2 = new Lfu(10000);
-let data = getData();
-let entries = Object.entries(data);
+module.exports = (keys) => {
+    console.log('---------------------- LfuSet ----------------------');
+    let lfuSetJs = new LfuSetJs({}, 10000);
+    let sweetLfuSet = new SweetLfuSet(10000);
 
-console.log('Setting:');
-let date = Date.now();
-for (const [key] of entries) {
-    lfuSet.add(key);
-}
-console.log(`CollectionsJs: ${Date.now() - date}ms`);
+    console.log('Setting:');
+    let date = Date.now();
+    for (const key of keys) {
+        lfuSetJs.add(key);
+    }
+    console.log(`CollectionsJs: ${Date.now() - date}ms`);
 
-date = Date.now();
-for (const [key] of entries) {
-    lfuSet2.add(key);
-}
-console.log(`CollectionsTs: ${Date.now() - date}ms`);
+    date = Date.now();
+    for (const key of keys) {
+        sweetLfuSet.add(key);
+    }
+    console.log(`SweetCollections: ${Date.now() - date}ms`);
 
-console.log('\nGetting:');
-date = Date.now();
-for (const [key] of entries) {
-    lfuSet.has(key);
-}
-console.log(`CollectionsJs: ${Date.now() - date}ms`);
+    console.log('\nTest Having:');
+    date = Date.now();
+    for (const key of keys) {
+        lfuSetJs.has(key);
+    }
+    console.log(`CollectionsJs: ${Date.now() - date}ms`);
 
-date = Date.now();
-for (const [key] of entries) {
-    lfuSet2.has(key);
-}
-console.log(`CollectionsTs: ${Date.now() - date}ms`);
+    date = Date.now();
+    for (const key of keys) {
+        sweetLfuSet.has(key);
+    }
+    console.log(`SweetCollections: ${Date.now() - date}ms`);
+};

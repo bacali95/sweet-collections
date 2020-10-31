@@ -13,6 +13,7 @@
   "scripts": {
     "build": "rm -rf dist && tsc",
     "build:browserify": "browserify -r . -s index > collections.min.js",
+    "benchmark": "node benchmark",
     "test": "jest"
   },
   "license": "ISC",

@@ -1,34 +1,34 @@
-const Lru = require('../dist').LruMap;
-const LruMap = require('collections/lru-map');
-const { getData } = require('./utils');
+const SweetLruMap = require('../dist').LruMap;
+const LruMapJs = require('collections/lru-map');
 
-let lruMapJS = new LruMap({}, 10000);
-let lruMapTS = new Lru(10000);
-let data = getData();
-let entries = Object.entries(data);
+module.exports = (entries) => {
+    console.log('---------------------- LruMap ----------------------');
+    let lruMapJs = new LruMapJs({}, 10000);
+    let sweetLruMap = new SweetLruMap(10000);
 
-console.log('Setting:');
-let date = Date.now();
-for (const [key, value] of entries) {
-    lruMapJS.set(key, value);
-}
-console.log(`CollectionsJs: ${Date.now() - date}ms`);
+    console.log('Setting:');
+    let date = Date.now();
+    for (const [key, value] of entries) {
+        lruMapJs.set(key, value);
+    }
+    console.log(`CollectionsJs: ${Date.now() - date}ms`);
 
-date = Date.now();
-for (const [key, value] of entries) {
-    lruMapTS.set(key, value);
-}
-console.log(`CollectionsTs: ${Date.now() - date}ms`);
+    date = Date.now();
+    for (const [key, value] of entries) {
+        sweetLruMap.set(key, value);
+    }
+    console.log(`SweetCollections: ${Date.now() - date}ms`);
 
-console.log('\nGetting:');
-date = Date.now();
-for (const [key] of entries) {
-    lruMapJS.get(key);
-}
-console.log(`CollectionsJs: ${Date.now() - date}ms`);
+    console.log('\nGetting:');
+    date = Date.now();
+    for (const [key] of entries) {
+        lruMapJs.get(key);
+    }
+    console.log(`CollectionsJs: ${Date.now() - date}ms`);
 
-date = Date.now();
-for (const [key] of entries) {
-    lruMapTS.get(key);
-}
-console.log(`CollectionsTs: ${Date.now() - date}ms`);
+    date = Date.now();
+    for (const [key] of entries) {
+        sweetLruMap.get(key);
+    }
+    console.log(`SweetCollections: ${Date.now() - date}ms`);
+};
