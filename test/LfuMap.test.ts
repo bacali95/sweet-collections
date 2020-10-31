@@ -99,6 +99,45 @@ describe('Lfu Map', () => {
         expect<boolean>(map.delete(98)).toBe(false);
     });
 
+
+    it('should remove lest frequently used item if overflow the size', () => {
+        map.set(1, 1);
+        map.set(2, 2);
+        map.set(3, 3);
+        map.set(4, 4);
+        map.set(5, 5);
+        expect(map.size).toBe(5);
+
+        map.set(6, 6);
+        expect(map.size).toBe(5);
+        expect(map.get(1)).toBeUndefined();;
+
+        map.get(2);
+        map.get(2);
+        map.get(3);
+        map.set(7, 7);
+        expect(map.get(4)).toBeUndefined();;
+        map.set(8, 8);
+        expect(map.get(5)).toBeUndefined();;
+
+        map.get(6);
+        map.get(6);
+        map.get(7);
+        map.get(7);
+        map.get(8);
+        map.get(8);
+
+        map.set(9, 9);
+        expect(map.get(3)).toBeUndefined();;
+
+        map.get(9);
+        map.get(9);
+        map.set(10, 10);
+        map.set(10, 10);
+        expect(map.get(2)).toBeUndefined();;
+        expect(map.size).toBe(5);
+    });
+
     it('should return entries', () => {
         for (const [key, value] of [
             [45, 450],
