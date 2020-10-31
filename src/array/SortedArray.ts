@@ -18,8 +18,10 @@ export class SortedArray<T> {
         this.root = undefined;
     }
 
-    push(data: T): number {
-        this.root = this._insert(data, this.root);
+    push(...items: T[]): number {
+        for (const item of items) {
+            this.root = this._insert(item, this.root);
+        }
         return this.length;
     }
 

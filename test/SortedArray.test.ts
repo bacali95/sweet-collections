@@ -8,17 +8,13 @@ describe('Sorted Array', () => {
     });
 
     it('should push items and stay sorted', () => {
-        for (const item of [45, 46, 48, 98, 23, 34, 65, 59, 21, 10]) {
-            array.push(item);
-        }
+        array.push(45, 46, 48, 98, 23, 34, 65, 59, 21, 10);
         expect<number>(array.length).toBe(10);
         expect<number[]>(array.toArray()).toStrictEqual([10, 21, 23, 34, 45, 46, 48, 59, 65, 98]);
     });
 
     it('should get items by index', () => {
-        for (const item of [45, 46, 48, 98, 23, 34, 65, 59, 21, 10]) {
-            array.push(item);
-        }
+        array.push(45, 46, 48, 98, 23, 34, 65, 59, 21, 10);
         expect<number>(array.get(0)).toBe(10);
         expect<number>(array.get(3)).toBe(34);
         expect<number>(array.get(6)).toBe(48);
@@ -27,9 +23,7 @@ describe('Sorted Array', () => {
     });
 
     it('should return the min and the max', () => {
-        for (const item of [45, 46, 48, 98, 23, 34, 65, 59, 21, 10]) {
-            array.push(item);
-        }
+        array.push(45, 46, 48, 98, 23, 34, 65, 59, 21, 10);
         expect<number>(array.min()).toBe(10);
         expect<number>(array.max()).toBe(98);
     });
@@ -37,25 +31,19 @@ describe('Sorted Array', () => {
     it('should pop and shift', () => {
         expect<number>(array.shift()).toBe(undefined);
         expect<number>(array.pop()).toBe(undefined);
-        for (const item of [45, 46, 48, 98, 23, 34, 65, 59, 21, 10]) {
-            array.push(item);
-        }
+        array.push(45, 46, 48, 98, 23, 34, 65, 59, 21, 10);
         expect<number>(array.shift()).toBe(10);
         expect<number>(array.pop()).toBe(98);
         expect<number[]>(array.toArray()).toStrictEqual([21, 23, 34, 45, 46, 48, 59, 65]);
     });
 
     it('should keep duplicates', () => {
-        for (const item of [45, 46, 23, 48, 98, 23, 34, 65, 46, 59, 21, 10]) {
-            array.push(item);
-        }
+        array.push(45, 46, 23, 48, 98, 23, 34, 65, 46, 59, 21, 10);
         expect<number[]>(array.toArray()).toStrictEqual([10, 21, 23, 23, 34, 45, 46, 46, 48, 59, 65, 98]);
     });
 
     it('should delete items', () => {
-        for (const item of [45, 46, 48, 98, 23, 34, 34, 65, 47, 21, 10]) {
-            array.push(item);
-        }
+        array.push(45, 46, 48, 98, 23, 34, 34, 65, 47, 21, 10);
         expect<boolean>(array.delete(34)).toBe(true);
         expect<boolean>(array.delete(34)).toBe(true);
         expect<boolean>(array.delete(34)).toBe(false);
@@ -66,17 +54,13 @@ describe('Sorted Array', () => {
     });
 
     it('should return includes item', () => {
-        for (const item of [45, 46, 48, 98, 23, 34, 65, 47, 21, 10]) {
-            array.push(item);
-        }
+        array.push(45, 46, 48, 98, 23, 34, 65, 47, 21, 10);
         expect<boolean>(array.includes(45)).toBe(true);
         expect<boolean>(array.includes(11)).toBe(false);
     });
 
     it('should return first and last index of item', () => {
-        for (const item of [45, 46, 46, 48, 98, 23, 34, 65, 46, 59, 21, 10]) {
-            array.push(item);
-        }
+        array.push(45, 46, 46, 48, 98, 23, 34, 65, 46, 59, 21, 10);
         expect<number>(array.firstIndexOf(46)).toBe(5);
         expect<number>(array.lastIndexOf(46)).toBe(7);
         expect<number>(array.firstIndexOf(11)).toBe(-1);
@@ -84,27 +68,22 @@ describe('Sorted Array', () => {
     });
 
     it('should count the number of item', () => {
-        for (const item of [5, 3, 5, 4, 2, 1, 2]) {
-            array.push(item);
-        }
-        expect<number>(array.count(4)).toBe(1);
-        expect<number>(array.count(2)).toBe(2);
-        expect<number>(array.count(10)).toBe(0);
+        array.push(45, 46, 46, 48, 98, 23, 34, 65, 46, 59, 21, 10);
+        expect<number>(array.count(98)).toBe(1);
+        expect<number>(array.count(46)).toBe(3);
+        expect<number>(array.count(11)).toBe(0);
     });
 
     it('should ignore duplicates', () => {
         array = new SortedArray<number>((a, b) => a - b, true);
-        for (const item of [45, 46, 46, 48, 98, 23, 34, 65, 46, 59, 21, 10]) {
-            array.push(item);
-        }
+        array.push(45, 46, 46, 48, 98, 23, 34, 65, 46, 59, 21, 10);
         expect<number>(array.length).toBe(10);
         expect<number[]>(array.toArray()).toStrictEqual([10, 21, 23, 34, 45, 46, 48, 59, 65, 98]);
     });
 
     it('should clear', () => {
-        for (const item of [45, 46, 46, 48, 98, 23, 34, 65, 46, 59, 21, 10]) {
-            array.push(item);
-        }
+        array = new SortedArray<number>((a, b) => a - b);
+        array.push(45, 46, 48, 98, 23, 34, 65, 59, 21, 10);
         expect<number>(array.length).toBe(10);
         array.clear();
         expect<number>(array.length).toBe(0);
