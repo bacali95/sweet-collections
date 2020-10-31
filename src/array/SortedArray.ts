@@ -155,7 +155,7 @@ export class SortedArray<T> {
     }
 
     private height(node?: Node<T>): number {
-        return node ? node.height : -1;
+        return node ? node.height : 0;
     }
 
     private _size(node?: Node<T>): number {
@@ -163,61 +163,71 @@ export class SortedArray<T> {
     }
 
     private _insert(data: T, node?: Node<T>): Node<T> {
-        let comp = node ? this.comparator(data, node.data) : -1;
         if (!node) {
-            node = { data: data, height: 0, count: 1, nbrOfChildren: 0 };
+            return {
+                data: data,
+                height: 1,
+                count: 1,
+                nbrOfChildren: 0,
+            };
+        }
+        const comp = this.comparator(data, node.data);
+        if (comp > 0) {
+            node.right = this._insert(data, node.right);
         } else if (comp < 0) {
             node.left = this._insert(data, node.left);
-            if (this.height(node.left) - this.height(node.right) > 1) {
-                comp = this.comparator(data, node.left.data);
-                if (comp < 0) node = this.rotateWithLeftChild(node);
-                else node = this.doubleWithLeftChild(node);
-            }
-        } else if (comp > 0) {
-            node.right = this._insert(data, node.right);
-            if (this.height(node.right) - this.height(node.left) > 1) {
-                comp = this.comparator(data, node.right.data);
-                if (comp > 0) node = this.rotateWithRightChild(node);
-                else node = this.doubleWithRightChild(node);
-            }
-        } else if (!this.unique) {
-            node.count++;
+        } else {
+            if (!this.unique) node.count++;
+            return node;
         }
         node.height = Math.max(this.height(node.left), this.height(node.right)) + 1;
         node.nbrOfChildren = this._size(node.left) + this._size(node.right);
+        const balance = this.getBalance(node);
+        const compRight = node.right ? this.comparator(data, node.right.data) : 0;
+        const compLeft = node.left ? this.comparator(data, node.left.data) : 0;
+        if (node.left && balance > 1 && compLeft < 0) {
+            return this.rightRotate(node);
+        }
+        if (node.right && balance < -1 && compRight > 0) {
+            return this.leftRotate(node);
+        }
+        if (node.left && balance > 1 && compLeft > 0) {
+            node.left = this.leftRotate(node.left);
+            return this.rightRotate(node);
+        }
+        if (node.right && balance < -1 && compRight < 0) {
+            node.right = this.rightRotate(node.right);
+            return this.leftRotate(node);
+        }
         return node;
     }
 
-    private rotateWithLeftChild(node: Node<T>): Node<T> {
+    private getBalance(node?: Node<T>) {
+        return node ? this.height(node.left) - this.height(node.right) : 0;
+    }
+
+    private rightRotate(node: Node<T>): Node<T> {
         const aux = node.left;
         node.left = aux.right;
         aux.right = node;
+
         node.height = Math.max(this.height(node.left), this.height(node.right)) + 1;
         node.nbrOfChildren = this._size(node.left) + this._size(node.right);
-        aux.height = Math.max(this.height(aux.left), node.height) + 1;
+        aux.height = Math.max(this.height(aux.left), this.height(aux.right)) + 1;
         aux.nbrOfChildren = this._size(aux.left) + this._size(aux.right);
         return aux;
     }
 
-    private rotateWithRightChild(node: Node<T>): Node<T> {
+    private leftRotate(node: Node<T>): Node<T> {
         const aux = node.right;
         node.right = aux.left;
         aux.left = node;
+
         node.height = Math.max(this.height(node.left), this.height(node.right)) + 1;
         node.nbrOfChildren = this._size(node.left) + this._size(node.right);
-        aux.height = Math.max(this.height(aux.left), node.height) + 1;
+        aux.height = Math.max(this.height(aux.left), this.height(aux.right)) + 1;
         aux.nbrOfChildren = this._size(aux.left) + this._size(aux.right);
         return aux;
-    }
-
-    private doubleWithLeftChild(node: Node<T>): Node<T> {
-        node.left = this.rotateWithRightChild(node.left);
-        return this.rotateWithLeftChild(node);
-    }
-
-    private doubleWithRightChild(node: Node<T>): Node<T> {
-        node.right = this.rotateWithLeftChild(node.right);
-        return this.rotateWithRightChild(node);
     }
 
     private _delete(value: T, node: Node<T>, removed: boolean = false): Node<T> {
@@ -231,18 +241,34 @@ export class SortedArray<T> {
             if (!removed) node.count--;
             if (!node.count || removed) {
                 if (!node.left) {
-                    return node.right;
+                    node = node.right;
+                } else if (!node.right) {
+                    node = node.left;
+                } else {
+                    node.data = this._min(node.right);
+                    node.count = node.right.count;
+                    node.right = this._delete(node.right.data, node.right, true);
                 }
-                if (!node.right) {
-                    return node.left;
-                }
-                node.data = this._min(node.right);
-                node.count = node.right.count;
-                node.right = this._delete(node.right.data, node.right, true);
             }
         }
+        if (!node) return node;
         node.height = Math.max(this.height(node.left), this.height(node.right)) + 1;
         node.nbrOfChildren = this._size(node.left) + this._size(node.right);
+        const balance = this.getBalance(node);
+        if (balance > 1 && this.getBalance(node.left) >= 0) {
+            return this.rightRotate(node);
+        }
+        if (balance > 1 && this.getBalance(node.left) < 0) {
+            node.left = this.leftRotate(node.left);
+            return this.rightRotate(node);
+        }
+        if (balance < -1 && this.getBalance(node.right) <= 0) {
+            return this.leftRotate(node);
+        }
+        if (balance < -1 && this.getBalance(node.right) > 0) {
+            node.right = this.rightRotate(node.right);
+            return this.leftRotate(node);
+        }
         return node;
     }
 
