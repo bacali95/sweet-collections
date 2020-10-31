@@ -15,9 +15,11 @@ export class Heap<T> {
         return this.heap[0];
     }
 
-    push(value: T): void {
-        this.heap.push(value);
-        this.siftUp();
+    push(...values: T[]): void {
+        for (const item of values) {
+            this.heap.push(item);
+            this.siftUp();
+        }
     }
 
     pop(): T {
