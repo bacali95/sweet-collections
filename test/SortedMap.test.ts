@@ -58,7 +58,7 @@ describe('Sorted Map', () => {
         expect<number>(map.get(45)).toBe(450);
         expect<number>(map.get(65)).toBe(650);
         expect<number>(map.get(98)).toBe(980);
-        expect<number>(map.get(11)).toBe(undefined);
+        expect<number>(map.get(11)).toBeUndefined();
     });
 
     it('should has values by keys', () => {

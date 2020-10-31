@@ -22,6 +22,7 @@ describe('Lru Map', () => {
         ]) {
             map.set(key, value);
         }
+        map.set(10, 100);
         expect<number>(map.size).toBe(5);
         expect<[number, number][]>([...map[Symbol.iterator]()]).toStrictEqual([
             [34, 340],

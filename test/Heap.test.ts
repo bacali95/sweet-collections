@@ -19,6 +19,7 @@ describe('Heap', () => {
     });
 
     it('should pop and return the peek', () => {
+        expect<number>(heap.pop()).toBeUndefined();
         heap.push(45, 46, 48, 98, 23, 34, 65, 59, 21, 10);
         expect<number>(heap.pop()).toBe(10);
         expect<number>(heap.pop()).toBe(21);
