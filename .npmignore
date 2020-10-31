@@ -1,0 +1,13 @@
+.prettierrc
+.gitignore
+.github
+.idea
+
+benchmark
+coverage
+node_modules
+src
+test
+jest.config.js
+tsconfig.json
+tsconfig.jest.json
