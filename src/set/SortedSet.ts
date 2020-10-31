@@ -11,8 +11,8 @@ export class SortedSet<T> implements Set<T> {
         return this.array.includes(value);
     }
 
-    add(value: T): this {
-        this.array.push(value);
+    add(...values: T[]): this {
+        this.array.push(...values);
         return this;
     }
 

@@ -8,9 +8,7 @@ describe('Sorted Set', () => {
     });
 
     it('should set key, values and stay sorted', () => {
-        for (const value of [45, 46, 48, 98, 23, 34, 65, 59, 21, 10]) {
-            set.add(value);
-        }
+        set.add(45, 46, 48, 98, 23, 34, 65, 59, 21, 10);
         expect<number>(set.size).toBe(10);
         expect<number[]>([...set[Symbol.iterator]()]).toStrictEqual([10, 21, 23, 34, 45, 46, 48, 59, 65, 98]);
         expect<number[]>([...set.keys()]).toStrictEqual([10, 21, 23, 34, 45, 46, 48, 59, 65, 98]);
@@ -18,9 +16,7 @@ describe('Sorted Set', () => {
     });
 
     it('should has values by keys', () => {
-        for (const value of [45, 46, 48, 98, 23, 34, 65, 59, 21, 10]) {
-            set.add(value);
-        }
+        set.add(45, 46, 48, 98, 23, 34, 65, 59, 21, 10);
         expect<boolean>(set.has(10)).toBe(true);
         expect<boolean>(set.has(45)).toBe(true);
         expect<boolean>(set.has(65)).toBe(true);
@@ -29,9 +25,7 @@ describe('Sorted Set', () => {
     });
 
     it('should delete values by keys', () => {
-        for (const value of [45, 46, 48, 98, 23, 34, 65, 59, 21, 10]) {
-            set.add(value);
-        }
+        set.add(45, 46, 48, 98, 23, 34, 65, 59, 21, 10);
         expect<boolean>(set.delete(10)).toBe(true);
         expect<boolean>(set.delete(10)).toBe(false);
         expect<boolean>(set.delete(59)).toBe(true);
@@ -40,9 +34,7 @@ describe('Sorted Set', () => {
     });
 
     it('should return entries', () => {
-        for (const value of [45, 46, 48, 98, 23, 34, 65, 59, 21, 10]) {
-            set.add(value);
-        }
+        set.add(45, 46, 48, 98, 23, 34, 65, 59, 21, 10);
         expect<[number, number][]>([...set.entries()]).toStrictEqual([
             [10, 10],
             [21, 21],
@@ -58,16 +50,12 @@ describe('Sorted Set', () => {
     });
 
     it('should run callback in foreach', () => {
-        for (const value of [45, 46, 48, 98, 23, 34, 65, 59, 21, 10]) {
-            set.add(value);
-        }
+        set.add(45, 46, 48, 98, 23, 34, 65, 59, 21, 10);
         set.forEach((value, key, map) => expect<boolean>(map.has(key)).toBe(true));
     });
 
     it('should clear', () => {
-        for (const value of [45, 46, 48, 98, 23, 34, 65, 59, 21, 10]) {
-            set.add(value);
-        }
+        set.add(45, 46, 48, 98, 23, 34, 65, 59, 21, 10);
         expect<number>(set.size).toBe(10);
         set.clear();
         expect<number>(set.size).toBe(0);
