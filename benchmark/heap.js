@@ -3,8 +3,8 @@ const HeapJs = require('collections/heap');
 
 module.exports = (values) => {
     console.log('---------------------- Heap ----------------------');
-    let heapJs = new HeapJs({}, undefined, (a, b) => b - a);
-    let sweetHeap = new SweetHeap((a, b) => a < b);
+    const heapJs = new HeapJs({}, undefined, (a, b) => b - a);
+    const sweetHeap = new SweetHeap((a, b) => a < b);
 
     console.log('Adding:');
     let date = Date.now();
@@ -21,13 +21,13 @@ module.exports = (values) => {
 
     console.log('\nPopping:');
     date = Date.now();
-    for (const value of values) {
+    for (let i = 0; i < values.length; i++) {
         heapJs.pop();
     }
     console.log(`CollectionsJs: ${Date.now() - date}ms`);
 
     date = Date.now();
-    for (const value of values) {
+    for (let i = 0; i < values.length; i++) {
         sweetHeap.pop();
     }
     console.log(`SweetCollections: ${Date.now() - date}ms`);

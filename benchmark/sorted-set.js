@@ -3,8 +3,8 @@ const SortedSetJs = require('collections/sorted-set');
 
 module.exports = (values) => {
     console.log('---------------------- SortedSet ----------------------');
-    let sortedSetJs = new SortedSetJs({}, undefined, (a, b) => a - b);
-    let sweetSortedSet = new SweetSortedSet((a, b) => a - b);
+    const sortedSetJs = new SortedSetJs({}, undefined, (a, b) => a - b);
+    const sweetSortedSet = new SweetSortedSet((a, b) => a - b);
 
     console.log('Adding:');
     let date = Date.now();

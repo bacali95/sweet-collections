@@ -3,8 +3,8 @@ const LruSetJs = require('collections/lru-set');
 
 module.exports = (keys) => {
     console.log('---------------------- LruSet ----------------------');
-    let lruSetJs = new LruSetJs({}, 10000);
-    let sweetLruSet = new SweetLruSet(10000);
+    const lruSetJs = new LruSetJs({}, 10000);
+    const sweetLruSet = new SweetLruSet(10000);
 
     console.log('Setting:');
     let date = Date.now();

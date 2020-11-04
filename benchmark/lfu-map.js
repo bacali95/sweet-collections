@@ -3,8 +3,8 @@ const LfuMapJs = require('collections/lfu-map');
 
 module.exports = (entries) => {
     console.log('---------------------- LfuMap ----------------------');
-    let lruMapJs = new LfuMapJs({}, 10000);
-    let sweetLfuMap = new SweetLfuMap(10000);
+    const lruMapJs = new LfuMapJs({}, 10000);
+    const sweetLfuMap = new SweetLfuMap(10000);
 
     console.log('Setting:');
     let date = Date.now();

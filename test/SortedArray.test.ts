@@ -19,7 +19,7 @@ describe('Sorted Array', () => {
         expect<number>(array.get(3)).toBe(34);
         expect<number>(array.get(6)).toBe(48);
         expect<number>(array.get(9)).toBe(98);
-        expect<number>(array.get(10)).toBeUndefined();;
+        expect<number>(array.get(10)).toBeUndefined();
     });
 
     it('should return the min and the max', () => {
@@ -29,8 +29,8 @@ describe('Sorted Array', () => {
     });
 
     it('should pop and shift', () => {
-        expect<number>(array.shift()).toBeUndefined();;
-        expect<number>(array.pop()).toBeUndefined();;
+        expect<number>(array.shift()).toBeUndefined();
+        expect<number>(array.pop()).toBeUndefined();
         array.push(45, 46, 48, 98, 23, 34, 65, 59, 21, 10);
         expect<number>(array.shift()).toBe(10);
         expect<number>(array.pop()).toBe(98);

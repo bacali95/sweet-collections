@@ -3,8 +3,8 @@ const LruMapJs = require('collections/lru-map');
 
 module.exports = (entries) => {
     console.log('---------------------- LruMap ----------------------');
-    let lruMapJs = new LruMapJs({}, 10000);
-    let sweetLruMap = new SweetLruMap(10000);
+    const lruMapJs = new LruMapJs({}, 10000);
+    const sweetLruMap = new SweetLruMap(10000);
 
     console.log('Setting:');
     let date = Date.now();

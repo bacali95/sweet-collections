@@ -21,13 +21,13 @@ module.exports = (entries) => {
 
     console.log('\nGetting:');
     date = Date.now();
-    for (const [_, value] of entries) {
+    for (const [, value] of entries) {
         sortedMap.get(value);
     }
     console.log(`CollectionsJs: ${Date.now() - date}ms`);
 
     date = Date.now();
-    for (const [_, value] of entries) {
+    for (const [, value] of entries) {
         sweetSortedMap.get(value);
     }
     console.log(`SweetCollections: ${Date.now() - date}ms`);

@@ -3,8 +3,8 @@ const SortedArrayJs = require('collections/sorted-array');
 
 module.exports = (values) => {
     console.log('---------------------- SortedArray ----------------------');
-    let sortedArrayJs = new SortedArrayJs({}, undefined, (a, b) => a - b);
-    let sweetSortedArray = new SweetSortedArray((a, b) => a - b);
+    const sortedArrayJs = new SortedArrayJs({}, undefined, (a, b) => a - b);
+    const sweetSortedArray = new SweetSortedArray((a, b) => a - b);
 
     console.log('Adding:');
     let date = Date.now();
@@ -31,4 +31,4 @@ module.exports = (values) => {
         sweetSortedArray.includes(value);
     }
     console.log(`SweetCollections: ${Date.now() - date}ms`);
-}
+};

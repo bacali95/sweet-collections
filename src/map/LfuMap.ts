@@ -4,7 +4,7 @@ type Frequency = {
     index: number;
     count: number;
     left?: Frequency;
-    right?: Frequency
+    right?: Frequency;
 };
 
 export class LfuMap<K, V> extends SizedMap<K, V> {

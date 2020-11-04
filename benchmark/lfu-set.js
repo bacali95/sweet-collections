@@ -3,8 +3,8 @@ const LfuSetJs = require('collections/lfu-set');
 
 module.exports = (keys) => {
     console.log('---------------------- LfuSet ----------------------');
-    let lfuSetJs = new LfuSetJs({}, 10000);
-    let sweetLfuSet = new SweetLfuSet(10000);
+    const lfuSetJs = new LfuSetJs({}, 10000);
+    const sweetLfuSet = new SweetLfuSet(10000);
 
     console.log('Setting:');
     let date = Date.now();
