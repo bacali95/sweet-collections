@@ -11,15 +11,15 @@ export class Heap<T> {
         this.heap = [];
     }
 
-    peek(): T {
-        return this.heap[0];
-    }
-
     push(...values: T[]): void {
         for (const item of values) {
             this.heap.push(item);
             this.siftUp();
         }
+    }
+
+    peek(): T {
+        return this.heap[0];
     }
 
     pop(): T {
@@ -74,7 +74,8 @@ export class Heap<T> {
             (left(node) < this.size && this.greater(left(node), node)) ||
             (right(node) < this.size && this.greater(right(node), node))
         ) {
-            let maxChild = right(node) < this.size && this.greater(right(node), left(node)) ? right(node) : left(node);
+            const maxChild =
+                right(node) < this.size && this.greater(right(node), left(node)) ? right(node) : left(node);
             this.swap(node, maxChild);
             node = maxChild;
         }
