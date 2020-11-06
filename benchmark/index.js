@@ -1,3 +1,5 @@
+const { green } = require('chalk');
+
 const { getData } = require('./utils');
 
 const heap = require('./heap');
@@ -14,8 +16,10 @@ const lfuMap = require('./lfu-map');
 
 const data = getData();
 const entries = Object.entries(data).map(([i, f]) => [parseInt(i), parseFloat(f)]);
-const keys = entries.map(e => e[0]);
-const values = entries.map(e => e[1]);
+const keys = entries.map((e) => e[0]);
+const values = entries.map((e) => e[1]);
+
+console.log(green(`Start benchmarking with ${entries.length} entries...`));
 
 heap(values);
 

@@ -18,6 +18,7 @@
     "@typescript-eslint",
     "jest"
   ],
+  "ignorePatterns": ["dist/**/*.js"],
   "rules": {
   }
 }
