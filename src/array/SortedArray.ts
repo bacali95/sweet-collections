@@ -177,6 +177,7 @@ export class SortedArray<T> {
         } else if (comp < 0) {
             node.left = this._insert(data, node.left);
         } else {
+            node.data = data;
             if (!this.unique) node.count++;
             return node;
         }
@@ -232,7 +233,7 @@ export class SortedArray<T> {
 
     private _delete(value: T, node: Node<T>, removed: boolean = false): Node<T> {
         if (!node) return node;
-        let comp = this.comparator(value, node.data);
+        const comp = this.comparator(value, node.data);
         if (comp < 0) {
             node.left = this._delete(value, node.left, removed);
         } else if (comp > 0) {
