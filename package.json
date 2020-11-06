@@ -26,8 +26,8 @@
     "heap"
   ],
   "scripts": {
+    "prepare": "yarn build",
     "build": "rm -rf dist && tsc",
-    "build:browserify": "browserify -r . -s index > collections.min.js",
     "benchmark": "node benchmark",
     "lint": "eslint .",
     "prettier": "prettier --list-different '**/{*,.*}.ts'",
