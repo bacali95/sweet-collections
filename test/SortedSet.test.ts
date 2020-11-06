@@ -1,7 +1,7 @@
 import { SortedSet } from '../src';
 
 describe('Sorted Set', () => {
-    let set = new SortedSet<number>((a, b) => a - b);
+    const set = new SortedSet<number>((a, b) => a - b);
 
     beforeEach(() => {
         set.clear();

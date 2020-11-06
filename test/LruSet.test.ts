@@ -1,7 +1,7 @@
 import { LruSet } from '../src';
 
 describe('Lru Set', () => {
-    let set = new LruSet<number>(5);
+    const set = new LruSet<number>(5);
 
     beforeEach(() => {
         set.clear();

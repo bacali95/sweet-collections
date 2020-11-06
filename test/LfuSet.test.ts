@@ -1,7 +1,7 @@
 import { LfuSet } from '../src';
 
 describe('Lfu Set', () => {
-    let set = new LfuSet<number>(5);
+    const set = new LfuSet<number>(5);
 
     beforeEach(() => {
         set.clear();

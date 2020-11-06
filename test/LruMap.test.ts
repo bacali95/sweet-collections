@@ -1,7 +1,7 @@
 import { LruMap } from '../src';
 
 describe('Lru Map', () => {
-    let map = new LruMap<number, number>(5);
+    const map = new LruMap<number, number>(5);
 
     beforeEach(() => {
         map.clear();

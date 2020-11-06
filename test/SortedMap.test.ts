@@ -1,7 +1,7 @@
 import { SortedMap } from '../src';
 
 describe('Sorted Map', () => {
-    let map = new SortedMap<number, number>((a, b) => a - b);
+    const map = new SortedMap<number, number>((a, b) => a - b);
 
     beforeEach(() => {
         map.clear();
@@ -37,6 +37,8 @@ describe('Sorted Map', () => {
         ]);
         expect<number[]>([...map.keys()]).toStrictEqual([10, 21, 23, 34, 45, 46, 48, 59, 65, 98]);
         expect<number[]>([...map.values()]).toStrictEqual([100, 210, 230, 340, 450, 460, 480, 590, 650, 980]);
+        map.set(45, 451);
+        expect<number>(map.get(45)).toBe(451);
     });
 
     it('should get values by keys', () => {

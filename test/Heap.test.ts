@@ -1,7 +1,7 @@
 import { Heap } from '../src';
 
 describe('Heap', () => {
-    let heap = new Heap<number>((a, b) => a < b);
+    const heap = new Heap<number>((a, b) => a < b);
 
     beforeEach(() => {
         heap.clear();
