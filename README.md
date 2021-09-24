@@ -29,9 +29,10 @@ or
 yarn add sweet-collections
 ```
 
-## Documentation
+## Usage
 
-### LruMap
+<details>
+    <summary>LruMap</summary>
 
 ```Typescript
 import { LruMap } from 'sweet-collections';
@@ -54,8 +55,10 @@ console.log(map.size)       // 2
 map.clear();
 console.log(map.size)       // 0
 ```
+</details>
 
-### LruSet
+<details>
+    <summary>LruSet</summary>
 
 ```Typescript
 import { LruSet } from 'sweet-collections';
@@ -76,8 +79,10 @@ console.log(set.size)       // 2
 set.clear();
 console.log(set.size)       // 0
 ```
+</details>
 
-### LfuMap
+<details>
+    <summary>LfuMap</summary>
 
 ```Typescript
 import { LfuMap } from 'sweet-collections';
@@ -100,13 +105,15 @@ console.log(map.size)       // 2
 map.clear();
 console.log(map.size)       // 0
 ```
+</details>
 
-### LruSet
+<details>
+    <summary>LfuSet</summary>
 
 ```Typescript
-import { LruSet } from 'sweet-collections';
+import { LfuSet } from 'sweet-collections';
 
-const set = new LruSet<number>(3);
+const set = new LfuSet<number>(3);
 set.add(1);
 set.add(2);
 set.add(3);                 // least frequently used: 1
@@ -123,8 +130,10 @@ console.log(set.size)       // 2
 set.clear();
 console.log(set.size)       // 0
 ```
+</details>
 
-### SortedArray
+<details>
+    <summary>SortedArray</summary>
 
 ```Typescript
 import { SortedArray } from 'sweet-collections';
@@ -157,8 +166,10 @@ console.log(array.min());           // 1
 console.log(array.max());           // 3
 console.log(array.toArray());       // [1, 2, 3]
 ```
+</details>
 
-### SortedMap
+<details>
+    <summary>SortedMap</summary>
 
 ```Typescript
 import { SortedMap } from 'sweet-collections';
@@ -181,8 +192,10 @@ console.log([...map.keys()]);       // [1, 2, 3, 5]
 console.log([...map.values()]);     // ["e", "d", "c", "a"]
 console.log(map.has(4));            // false
 ```
+</details>
 
-### SortedSet
+<details>
+    <summary>SortedSet</summary>
 
 ```Typescript
 import { SortedSet } from 'sweet-collections';
@@ -203,8 +216,10 @@ set.delete(4);
 console.log([...set.keys()]);       // [1, 2, 3, 5]
 console.log(set.has(4));            // false
 ```
+</details>
 
-### Heap
+<details>
+    <summary>Heap</summary>
 
 ```Typescript
 import { Heap } from 'sweet-collections';
@@ -222,6 +237,7 @@ console.log(set.peek());        // 4
 console.log(set.replace(0));    // 4
 console.log(set.peek());        // 3
 ```
+</details>
 
 ## Author
 
@@ -237,5 +253,5 @@ Give a ⭐️ if this project helped you!
 
 ## 📝 License
 
-Copyright © 2020 [Nasreddine Bac Ali](https://github.com/bacali95).
+Copyright © 2021 [Nasreddine Bac Ali](https://github.com/bacali95).
 This project is [ISC](https://github.com/bacali95/sweet-collections/blob/master/LICENSE) licensed.
