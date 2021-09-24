@@ -3,19 +3,14 @@ import { Node, SizedMap } from './SizedMap';
 type Frequency = {
     index: number;
     count: number;
-    left?: Frequency;
-    right?: Frequency;
+    previous?: Frequency;
+    next?: Frequency;
 };
 
 export class LfuMap<K, V> extends SizedMap<K, V> {
-    private queue: { [used: string]: { start?: Node<K, V>; end?: Node<K, V> } };
-    private leastFrequent: Frequency;
-    private frequencies: { [used: string]: Frequency };
-
-    constructor(limit: number) {
-        super(limit);
-        this.clear();
-    }
+    private queue: { [used: string]: { head?: Node<K, V>; tail?: Node<K, V> } } = {};
+    private frequencies: { [used: string]: Frequency } = { 1: { index: 1, count: 0 } };
+    private leastFrequent: Frequency = this.frequencies[1];
 
     has(key: K): boolean {
         const node = this.map.get(key);
@@ -38,6 +33,7 @@ export class LfuMap<K, V> extends SizedMap<K, V> {
     }
 
     set(key: K, value: V): this {
+        if (!this.limit) return this;
         let node = this.map.get(key);
         if (node) {
             node.value = value;
@@ -82,7 +78,7 @@ export class LfuMap<K, V> extends SizedMap<K, V> {
 
     private queuePop(): Node<K, V> {
         const min = this.leastFrequent.index;
-        const node = this.queue[min].end;
+        const node = this.queue[min].tail;
         this.removeNode(node);
         return node;
     }
@@ -91,14 +87,14 @@ export class LfuMap<K, V> extends SizedMap<K, V> {
         const used = ++node.used;
         this.increaseFrequency(used);
         this.initQueue(used);
-        node.right = this.queue[used].start;
-        node.left = undefined;
-        if (this.queue[used].start) {
-            this.queue[used].start.left = node;
+        node.next = this.queue[used].head;
+        node.previous = undefined;
+        if (this.queue[used].head) {
+            this.queue[used].head.previous = node;
         }
-        this.queue[used].start = node;
-        if (!this.queue[used].end) {
-            this.queue[used].end = this.queue[used].start;
+        this.queue[used].head = node;
+        if (!this.queue[used].tail) {
+            this.queue[used].tail = this.queue[used].head;
         }
     }
 
@@ -106,34 +102,34 @@ export class LfuMap<K, V> extends SizedMap<K, V> {
         const used = node.used;
         this.decreaseFrequency(used);
         this.initQueue(used);
-        if (node.left) {
-            node.left.right = node.right;
+        if (node.previous) {
+            node.previous.next = node.next;
         } else {
-            this.queue[used].start = node.right;
+            this.queue[used].head = node.next;
         }
-        if (node.right) {
-            node.right.left = node.left;
+        if (node.next) {
+            node.next.previous = node.previous;
         } else {
-            this.queue[used].end = node.left;
+            this.queue[used].tail = node.previous;
         }
     }
 
     private increaseFrequency(index: number): void {
         if (!this.frequencies[index]) {
             this.frequencies[index] = { index: index, count: 0 };
-            this.frequencies[index].right = this.frequencies[index - 1].right;
-            this.frequencies[index].left = this.frequencies[index - 1].count
+            this.frequencies[index].next = this.frequencies[index - 1].next;
+            this.frequencies[index].previous = this.frequencies[index - 1].count
                 ? this.frequencies[index - 1]
-                : this.frequencies[index - 1].left;
+                : this.frequencies[index - 1].previous;
         }
         if (!this.frequencies[index].count) {
-            if (this.frequencies[index].left) {
-                this.frequencies[index].right = this.frequencies[index].left.right;
-                this.frequencies[index].left.right = this.frequencies[index];
+            if (this.frequencies[index].previous) {
+                this.frequencies[index].next = this.frequencies[index].previous.next;
+                this.frequencies[index].previous.next = this.frequencies[index];
             }
-            if (this.frequencies[index].right) {
-                this.frequencies[index].left = this.frequencies[index].right.left;
-                this.frequencies[index].right.left = this.frequencies[index];
+            if (this.frequencies[index].next) {
+                this.frequencies[index].previous = this.frequencies[index].next.previous;
+                this.frequencies[index].next.previous = this.frequencies[index];
             }
         }
         this.frequencies[index].count++;
@@ -145,15 +141,15 @@ export class LfuMap<K, V> extends SizedMap<K, V> {
     private decreaseFrequency(index: number): void {
         this.frequencies[index].count--;
         if (!this.frequencies[index].count) {
-            if (this.frequencies[index].left) {
-                this.frequencies[index].left.right = this.frequencies[index].right;
+            if (this.frequencies[index].previous) {
+                this.frequencies[index].previous.next = this.frequencies[index].next;
             }
-            if (this.frequencies[index].right) {
-                this.frequencies[index].right.left = this.frequencies[index].left;
+            if (this.frequencies[index].next) {
+                this.frequencies[index].next.previous = this.frequencies[index].previous;
             }
         }
         if (!this.leastFrequent || !this.leastFrequent.count) {
-            this.leastFrequent = this.leastFrequent.right;
+            this.leastFrequent = this.leastFrequent.next;
         }
     }
 }

@@ -2,35 +2,28 @@ export interface Node<K, V> {
     key: K;
     value: V;
     used?: number;
-    left?: Node<K, V>;
-    right?: Node<K, V>;
+    previous?: Node<K, V>;
+    next?: Node<K, V>;
 }
 
 export abstract class SizedMap<K, V> implements Map<K, V> {
     readonly limit: number;
     protected readonly map: Map<K, Node<K, V>>;
 
-    protected constructor(limit: number) {
+    constructor(limit: number) {
+        if (limit < 0) {
+            throw new Error('Map size limit should positive.');
+        }
+
         this.limit = limit;
         this.map = new Map<K, Node<K, V>>();
     }
 
-    has(key: K): boolean {
-        return this.map.has(key);
-    }
+    abstract has(key: K): boolean;
 
-    get(key: K, _default?: V): V | undefined {
-        const node = this.map.get(key);
-        if (node) {
-            return node.value;
-        }
-        return _default;
-    }
+    abstract get(key: K, _default?: V): V | undefined;
 
-    set(key: K, value: V): this {
-        this.map.set(key, { key, value });
-        return this;
-    }
+    abstract set(key: K, value: V): this;
 
     delete(key: K): boolean {
         return this.map.delete(key);

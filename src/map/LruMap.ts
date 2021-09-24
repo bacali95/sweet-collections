@@ -1,16 +1,13 @@
 import { Node, SizedMap } from './SizedMap';
 
 export class LruMap<K, V> extends SizedMap<K, V> {
-    private start?: Node<K, V>;
-    private end?: Node<K, V>;
-
-    constructor(limit: number) {
-        super(limit);
-    }
+    private head?: Node<K, V>;
+    private tail?: Node<K, V>;
 
     has(key: K): boolean {
         const node = this.map.get(key);
         if (node) {
+            this.removeNode(node);
             this.moveToTop(node);
             return true;
         }
@@ -20,6 +17,7 @@ export class LruMap<K, V> extends SizedMap<K, V> {
     get(key: K, _default?: V): V | undefined {
         const node = this.map.get(key);
         if (node) {
+            this.removeNode(node);
             this.moveToTop(node);
             return node.value;
         }
@@ -30,6 +28,7 @@ export class LruMap<K, V> extends SizedMap<K, V> {
         let node = this.map.get(key);
         if (node) {
             node.value = value;
+            this.removeNode(node);
             this.moveToTop(node);
         } else {
             node = {
@@ -37,7 +36,7 @@ export class LruMap<K, V> extends SizedMap<K, V> {
                 value: value,
             };
             if (this.isFull()) {
-                this.delete(this.end.key);
+                this.delete(this.tail.key);
             }
             this.moveToTop(node);
             this.map.set(key, node);
@@ -55,33 +54,33 @@ export class LruMap<K, V> extends SizedMap<K, V> {
     }
 
     clear() {
-        this.start = this.end = undefined;
+        this.head = this.tail = undefined;
         super.clear();
     }
 
-    protected moveToTop(node: Node<K, V>): void {
-        node.right = this.start;
-        node.left = undefined;
-        if (this.start) {
-            this.start.left = node;
+    private moveToTop(node: Node<K, V>): void {
+        node.next = this.head;
+        node.previous = undefined;
+        if (this.head) {
+            this.head.previous = node;
         }
-        this.start = node;
-        if (!this.end) {
-            this.end = this.start;
+        this.head = node;
+        if (!this.tail) {
+            this.tail = this.head;
         }
     }
 
-    protected removeNode(node: Node<K, V>): void {
-        if (node.left) {
-            node.left.right = node.right;
+    private removeNode(node: Node<K, V>): void {
+        if (node.previous) {
+            node.previous.next = node.next;
         } else {
-            this.start = node.right;
+            this.head = node.next;
         }
 
-        if (node.right) {
-            node.right.left = node.left;
+        if (node.next) {
+            node.next.previous = node.previous;
         } else {
-            this.end = node.left;
+            this.tail = node.previous;
         }
     }
 }

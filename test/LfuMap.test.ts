@@ -196,4 +196,19 @@ describe('Lfu Map', () => {
         expect<number>(map.size).toBe(0);
         expect<[number, number][]>([...map.entries()]).toStrictEqual([]);
     });
+
+    it('should store nothing when limit is 0', () => {
+        const map = new LfuMap(0);
+        map.set(1, 1);
+        expect(map.has(1)).toBe(false);
+    });
+
+    it('should throw error if passed limit is negative', () => {
+        try {
+            const map = new LfuMap(-1);
+            map.get(1);
+        } catch (error) {
+            expect(error.message).toBe('Map size limit should positive.');
+        }
+    });
 });

@@ -142,6 +142,19 @@ describe('Lru Map', () => {
         map.forEach((value, key, map) => expect<number>(map.get(key)).toBe(value));
     });
 
+    it('should work when limit size is two', () => {
+        const map = new LruMap<number, number>(2);
+        map.set(1, 1);
+        map.set(2, 2);
+        expect(map.get(1)).toBe(1);
+        map.set(3, 3);
+        expect(map.get(2)).toBeUndefined();
+        map.set(4, 4);
+        expect(map.get(1)).toBeUndefined();
+        expect(map.get(3)).toBe(3);
+        expect(map.get(4)).toBe(4);
+    });
+
     it('should clear', () => {
         for (const [key, value] of [
             [45, 450],
