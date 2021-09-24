@@ -7,15 +7,16 @@
 
 Typescript implementations of in-memory cache data-structures for Node and Browser. These data-structures are:
 
--   **LruMap**: A fixed size `Map` which removes the least recently used entry.
--   **LruSet**: A fixed size `Set` which removes the least recently used entry. (Backed by a `LruMap`)
--   **LfuMap**: A fixed size `Map` which removes the least frequently used entry.
--   **LfuSet**: A fixed size `Set` which removes the least frequently used entry. (Backed by a `LfuMap`)
--   **SortedArray**: An `Array` that stays sorted after any modification.
--   **SortedMap**: A `Map` with entries stays sorted by key after any modification. (Backed by a `SortedArray`)
--   **SortedSet**: A `Set` with entries stays sorted after any modification. (Backed by a `SortedArray`)
--   **Heap**: A collection that have always the largest, smallest or most relevent value
-    on top.
+- **LruMap**: A fixed size `Map` which removes the least recently used entry.
+- **LruSet**: A fixed size `Set` which removes the least recently used entry. (Backed by a `LruMap`)
+- **LfuMap**: A fixed size `Map` which removes the least frequently used entry.
+- **LfuSet**: A fixed size `Set` which removes the least frequently used entry. (Backed by a `LfuMap`)
+- **SortedArray**: An `Array` that stays sorted after any modification.
+- **SortedMap**: A `Map` with entries stays sorted by key after any modification. (Backed by a `SortedArray`)
+- **SortedSet**: A `Set` with entries stays sorted after any modification. (Backed by a `SortedArray`)
+- **Heap**: A collection that have always the largest, smallest or most relevant value on top.
+- **Stack**: A collection that have always the last added value on top.
+- **Queue**: A collection that have always the first added value on top.
 
 ## Install
 
@@ -55,6 +56,7 @@ console.log(map.size)       // 2
 map.clear();
 console.log(map.size)       // 0
 ```
+
 </details>
 
 <details>
@@ -79,6 +81,7 @@ console.log(set.size)       // 2
 set.clear();
 console.log(set.size)       // 0
 ```
+
 </details>
 
 <details>
@@ -105,6 +108,7 @@ console.log(map.size)       // 2
 map.clear();
 console.log(map.size)       // 0
 ```
+
 </details>
 
 <details>
@@ -130,6 +134,7 @@ console.log(set.size)       // 2
 set.clear();
 console.log(set.size)       // 0
 ```
+
 </details>
 
 <details>
@@ -166,6 +171,7 @@ console.log(array.min());           // 1
 console.log(array.max());           // 3
 console.log(array.toArray());       // [1, 2, 3]
 ```
+
 </details>
 
 <details>
@@ -192,6 +198,7 @@ console.log([...map.keys()]);       // [1, 2, 3, 5]
 console.log([...map.values()]);     // ["e", "d", "c", "a"]
 console.log(map.has(4));            // false
 ```
+
 </details>
 
 <details>
@@ -216,6 +223,7 @@ set.delete(4);
 console.log([...set.keys()]);       // [1, 2, 3, 5]
 console.log(set.has(4));            // false
 ```
+
 </details>
 
 <details>
@@ -225,27 +233,64 @@ console.log(set.has(4));            // false
 import { Heap } from 'sweet-collections';
 
 // Heap with the maximum value on top
-const set = new Heap<number>((a: number, b: number) => a > b);
-set.push(3);
-set.push(2);
-set.push(5);
-set.push(4);
-set.push(1);
-console.log(set.peek());        // 5
-console.log(set.pop());         // 5
-console.log(set.peek());        // 4
-console.log(set.replace(0));    // 4
-console.log(set.peek());        // 3
+const heap = new Heap<number>((a: number, b: number) => a > b);
+heap.push(3);
+heap.push(2);
+heap.push(5);
+heap.push(4);
+heap.push(1);
+console.log(heap.peek());        // 5
+console.log(heap.pop());         // 5
+console.log(heap.peek());        // 4
+console.log(heap.replace(0));    // 4
+console.log(heap.peek());        // 3
 ```
+
+</details>
+
+<details>
+    <summary>Stack</summary>
+
+```Typescript
+import { Stack } from 'sweet-collections';
+
+const stack = new Stack<number>();
+stack.push(3);
+stack.push(2);
+console.log(stack.top());         // 2
+stack.push(5, 4, 1);
+console.log(stack.pop());         // 1
+console.log(stack.top());         // 4
+console.log(stack.size);          // 4
+```
+
+</details>
+
+<details>
+    <summary>Queue</summary>
+
+```Typescript
+import { Queue } from 'sweet-collections';
+
+const queue = new Queue<number>();
+queue.push(3);
+queue.push(2);
+console.log(queue.pop());         // 3
+queue.push(5, 4, 1);
+console.log(queue.pop());         // 2
+console.log(queue.peek());        // 5
+console.log(queue.size);          // 3
+```
+
 </details>
 
 ## Author
 
 👤 **Nasreddine Bac Ali**
 
--   Website: [nasreddinebacali.info](https://nasreddinebacali.info)
--   Github: [@bacali95](https://github.com/bacali95)
--   LinkedIn: [@bacali](https://linkedin.com/in/bacali)
+- Website: [nasreddinebacali.info](https://nasreddinebacali.info)
+- Github: [@bacali95](https://github.com/bacali95)
+- LinkedIn: [@bacali](https://linkedin.com/in/bacali)
 
 ## Show your support
 
@@ -253,5 +298,5 @@ Give a ⭐️ if this project helped you!
 
 ## 📝 License
 
-Copyright © 2021 [Nasreddine Bac Ali](https://github.com/bacali95).
-This project is [ISC](https://github.com/bacali95/sweet-collections/blob/master/LICENSE) licensed.
+Copyright © 2021 [Nasreddine Bac Ali](https://github.com/bacali95). This project
+is [ISC](https://github.com/bacali95/sweet-collections/blob/master/LICENSE) licensed.

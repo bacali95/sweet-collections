@@ -11,11 +11,12 @@ export class Heap<T> {
         this.heap = [];
     }
 
-    push(...values: T[]): void {
+    push(...values: T[]): this {
         for (const item of values) {
             this.heap.push(item);
             this.siftUp();
         }
+        return this;
     }
 
     peek(): T {
