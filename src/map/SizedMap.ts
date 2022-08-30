@@ -1,22 +1,33 @@
+import { Heap } from '../heap';
+
 export interface Node<K, V> {
     key: K;
     value: V;
-    used?: number;
-    previous?: Node<K, V>;
-    next?: Node<K, V>;
+    index: number;
+    freq?: number;
+    previousIndex?: number;
+    nextIndex?: number;
 }
 
 export abstract class SizedMap<K, V> implements Map<K, V> {
     readonly limit: number;
-    protected readonly map: Map<K, Node<K, V>>;
+    protected readonly keysMap: Map<K, number>;
+    protected readonly valuesList: (Node<K, V> | undefined)[];
+    protected readonly freeIndexes: Heap<number>;
+    protected headIndex?: number;
+    protected tailIndex?: number;
+    protected maxIndex: number;
 
     constructor(limit: number) {
-        if (limit < 0) {
-            throw new Error('Map size limit should positive.');
+        if (limit <= 0) {
+            throw new Error('Map size limit should be strictly positive.');
         }
 
         this.limit = limit;
-        this.map = new Map<K, Node<K, V>>();
+        this.keysMap = new Map<K, number>();
+        this.valuesList = new Array(limit).fill(undefined);
+        this.freeIndexes = new Heap<number>(() => false);
+        this.maxIndex = 0;
     }
 
     abstract has(key: K): boolean;
@@ -26,21 +37,46 @@ export abstract class SizedMap<K, V> implements Map<K, V> {
     abstract set(key: K, value: V): this;
 
     delete(key: K): boolean {
-        return this.map.delete(key);
+        const index = this.keysMap.get(key);
+        if (index !== undefined) {
+            this.removeNode(this.valuesList[index]!);
+            this.valuesList[index] = undefined;
+            this.freeIndexes.push(index);
+        }
+        return this.keysMap.delete(key);
     }
 
-    keys(): IterableIterator<K> {
-        return this.map.keys();
+    *keys(): IterableIterator<K> {
+        let index = this.headIndex;
+        while (index !== undefined) {
+            const node = this.valuesList[index]!;
+
+            yield node.key;
+
+            index = node.nextIndex;
+        }
     }
 
-    values(): IterableIterator<V> {
-        return [...this.map.values()].map((node) => node.value)[Symbol.iterator]();
+    *values(): IterableIterator<V> {
+        let index = this.headIndex;
+        while (index !== undefined) {
+            const node = this.valuesList[index]!;
+
+            yield node.value;
+
+            index = node.nextIndex;
+        }
     }
 
-    entries(): IterableIterator<[K, V]> {
-        return [...this.map.values()]
-            .map<[K, V]>((node) => [node.key, node.value])
-            [Symbol.iterator]();
+    *entries(): IterableIterator<[K, V]> {
+        let index = this.headIndex;
+        while (index !== undefined) {
+            const node = this.valuesList[index]!;
+
+            yield [node.key, node.value];
+
+            index = node.nextIndex;
+        }
     }
 
     isFull(): boolean {
@@ -48,20 +84,58 @@ export abstract class SizedMap<K, V> implements Map<K, V> {
     }
 
     clear() {
-        this.map.clear();
+        this.keysMap.clear();
+        this.valuesList.fill(undefined);
+        this.freeIndexes.clear();
+        this.headIndex = this.tailIndex = undefined;
+        this.maxIndex = 0;
     }
 
-    readonly [Symbol.toStringTag]: string;
+    [Symbol.toStringTag]: string = 'SizedMap';
 
     [Symbol.iterator](): IterableIterator<[K, V]> {
         return this.entries();
     }
 
     forEach(cb: (value: V, key: K, map: Map<K, V>) => void, thisArg?: any): void {
-        this.map.forEach((item) => cb.call(thisArg, item.value, item.key, this));
+        const entries = [...this.entries()];
+        for (const [key, value] of entries) {
+            cb.call(thisArg, value, key, this);
+        }
     }
 
     get size(): number {
-        return this.map.size;
+        return this.keysMap.size;
+    }
+
+    protected getNewIndex(): number {
+        if (this.size === 0) {
+            return this.headIndex ?? this.maxIndex++;
+        }
+
+        if (this.isFull()) {
+            this.delete(this.valuesList[this.tailIndex!]!.key);
+        }
+
+        if (this.freeIndexes.size > 0) {
+            return this.freeIndexes.pop();
+        }
+
+        return this.maxIndex++;
+    }
+
+    protected removeNode(node: Node<K, V>): void {
+        if (node.previousIndex !== undefined) {
+            this.valuesList[node.previousIndex]!.nextIndex = node.nextIndex;
+        } else {
+            this.headIndex = node.nextIndex;
+        }
+
+        if (node.nextIndex !== undefined) {
+            this.valuesList[node.nextIndex]!.previousIndex = node.previousIndex;
+        } else {
+            this.tailIndex = node.previousIndex;
+        }
+        node.nextIndex = node.previousIndex = undefined;
     }
 }

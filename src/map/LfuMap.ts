@@ -1,20 +1,21 @@
 import { Node, SizedMap } from './SizedMap';
 
 type Frequency = {
-    index: number;
+    freq: number;
     count: number;
-    previous?: Frequency;
-    next?: Frequency;
+    previousFreq?: number;
+    nextFreq?: number;
 };
 
 export class LfuMap<K, V> extends SizedMap<K, V> {
-    private queue: { [used: string]: { head?: Node<K, V>; tail?: Node<K, V> } } = {};
-    private frequencies: { [used: string]: Frequency } = { 1: { index: 1, count: 0 } };
-    private leastFrequent: Frequency = this.frequencies[1];
+    private queue: { [freq: string]: { headIndex?: number; tailIndex?: number } } = {};
+    private frequencies: { [freq: string]: Frequency } = { 1: { freq: 1, count: 0 } };
+    private leastFrequent: number | undefined = 1;
 
     has(key: K): boolean {
-        const node = this.map.get(key);
-        if (node) {
+        const index = this.keysMap.get(key);
+        if (index !== undefined) {
+            const node = this.valuesList[index]!;
             this.removeNode(node);
             this.moveToTop(node);
             return true;
@@ -23,8 +24,9 @@ export class LfuMap<K, V> extends SizedMap<K, V> {
     }
 
     get(key: K, _default?: V): V | undefined {
-        const node = this.map.get(key);
-        if (node) {
+        const index = this.keysMap.get(key);
+        if (index !== undefined) {
+            const node = this.valuesList[index]!;
             this.removeNode(node);
             this.moveToTop(node);
             return node.value;
@@ -33,123 +35,118 @@ export class LfuMap<K, V> extends SizedMap<K, V> {
     }
 
     set(key: K, value: V): this {
-        if (!this.limit) return this;
-        let node = this.map.get(key);
-        if (node) {
+        let index = this.keysMap.get(key);
+        if (index !== undefined) {
+            const node = this.valuesList[index]!;
             node.value = value;
             this.removeNode(node);
             this.moveToTop(node);
         } else {
-            node = {
-                key: key,
-                value: value,
-                used: 0,
-            };
-            if (this.isFull()) {
-                super.delete(this.queuePop().key);
-            }
+            index = this.getNewIndex();
+            const node: Node<K, V> = { key, value, index, freq: 0 };
+            this.keysMap.set(key, index);
+            this.valuesList[index] = node;
             this.moveToTop(node);
-            this.map.set(key, node);
         }
         return this;
     }
 
-    delete(key: K): boolean {
-        const node = this.map.get(key);
-        if (node) {
-            this.removeNode(node);
-            return super.delete(key);
-        }
-        return false;
-    }
-
     clear() {
         this.queue = {};
-        this.frequencies = { 1: { index: 1, count: 0 } };
-        this.leastFrequent = this.frequencies[1];
+        this.frequencies = { 1: { freq: 1, count: 0 } };
+        this.leastFrequent = 1;
         super.clear();
     }
 
-    private initQueue(used: number) {
-        if (!this.queue[used]) {
-            this.queue[used] = {};
+    private initQueue(freq: number) {
+        if (!this.queue[freq]) {
+            this.queue[freq] = {};
         }
-    }
-
-    private queuePop(): Node<K, V> {
-        const min = this.leastFrequent.index;
-        const node = this.queue[min].tail;
-        this.removeNode(node);
-        return node;
     }
 
     private moveToTop(node: Node<K, V>): void {
-        const used = ++node.used;
-        this.increaseFrequency(used);
-        this.initQueue(used);
-        node.next = this.queue[used].head;
-        node.previous = undefined;
-        if (this.queue[used].head) {
-            this.queue[used].head.previous = node;
+        const freq = ++node.freq!;
+        this.increaseFrequency(freq);
+        this.initQueue(freq);
+
+        const frequency = this.frequencies[freq];
+
+        if (this.queue[freq].headIndex !== undefined) {
+            node.nextIndex = this.queue[freq].headIndex;
+            this.valuesList[this.queue[freq].headIndex!]!.previousIndex = node.index;
+        } else if (frequency.previousFreq !== undefined) {
+            node.nextIndex = this.queue[this.frequencies[frequency.previousFreq].freq].headIndex;
+            this.valuesList[this.queue[this.frequencies[frequency.previousFreq].freq].headIndex!]!.previousIndex =
+                node.index;
         }
-        this.queue[used].head = node;
-        if (!this.queue[used].tail) {
-            this.queue[used].tail = this.queue[used].head;
+
+        this.queue[freq].headIndex = node.index;
+        if (this.queue[freq].tailIndex === undefined) {
+            this.queue[freq].tailIndex = node.index;
+        }
+
+        if (frequency.nextFreq !== undefined) {
+            node.previousIndex = this.queue[this.frequencies[frequency.nextFreq].freq].tailIndex;
+            this.valuesList[this.queue[this.frequencies[frequency.nextFreq].freq].tailIndex!]!.nextIndex = node.index;
+        }
+
+        let lastFrequency = frequency;
+        while (lastFrequency.nextFreq !== undefined) {
+            lastFrequency = this.frequencies[lastFrequency.nextFreq];
+        }
+        this.headIndex = this.queue[lastFrequency!.freq].headIndex;
+        this.tailIndex = this.queue[this.leastFrequent!].tailIndex;
+    }
+
+    protected removeNode(node: Node<K, V>): void {
+        const freq = node.freq!;
+        this.decreaseFrequency(freq);
+        this.initQueue(freq);
+        if (node.index === this.queue[freq].headIndex) {
+            this.queue[freq].headIndex = node.nextIndex;
+        }
+        if (node.index === this.queue[freq].tailIndex) {
+            this.queue[freq].tailIndex = node.previousIndex;
+        }
+        super.removeNode(node);
+    }
+
+    private increaseFrequency(freq: number): void {
+        if (!this.frequencies[freq]) {
+            this.frequencies[freq] = { freq, count: 0 };
+            this.frequencies[freq].nextFreq = this.frequencies[freq - 1].nextFreq;
+            this.frequencies[freq].previousFreq = this.frequencies[freq - 1].count
+                ? freq - 1
+                : this.frequencies[freq - 1].previousFreq;
+        }
+        if (!this.frequencies[freq].count) {
+            if (this.frequencies[freq].previousFreq !== undefined) {
+                this.frequencies[freq].nextFreq = this.frequencies[this.frequencies[freq].previousFreq!]!.nextFreq;
+                this.frequencies[this.frequencies[freq].previousFreq!]!.nextFreq = freq;
+            }
+            if (this.frequencies[freq].nextFreq !== undefined) {
+                this.frequencies[freq].previousFreq = this.frequencies[this.frequencies[freq].nextFreq!]!.previousFreq;
+                this.frequencies[this.frequencies[freq].nextFreq!]!.previousFreq = freq;
+            }
+        }
+        this.frequencies[freq].count++;
+        if (!this.leastFrequent || freq < this.leastFrequent) {
+            this.leastFrequent = freq;
         }
     }
 
-    private removeNode(node: Node<K, V>): void {
-        const used = node.used;
-        this.decreaseFrequency(used);
-        this.initQueue(used);
-        if (node.previous) {
-            node.previous.next = node.next;
-        } else {
-            this.queue[used].head = node.next;
-        }
-        if (node.next) {
-            node.next.previous = node.previous;
-        } else {
-            this.queue[used].tail = node.previous;
-        }
-    }
-
-    private increaseFrequency(index: number): void {
-        if (!this.frequencies[index]) {
-            this.frequencies[index] = { index: index, count: 0 };
-            this.frequencies[index].next = this.frequencies[index - 1].next;
-            this.frequencies[index].previous = this.frequencies[index - 1].count
-                ? this.frequencies[index - 1]
-                : this.frequencies[index - 1].previous;
-        }
-        if (!this.frequencies[index].count) {
-            if (this.frequencies[index].previous) {
-                this.frequencies[index].next = this.frequencies[index].previous.next;
-                this.frequencies[index].previous.next = this.frequencies[index];
+    private decreaseFrequency(freq: number): void {
+        this.frequencies[freq].count--;
+        if (!this.frequencies[freq].count) {
+            if (this.frequencies[freq].previousFreq !== undefined) {
+                this.frequencies[this.frequencies[freq].previousFreq!]!.nextFreq = this.frequencies[freq].nextFreq;
             }
-            if (this.frequencies[index].next) {
-                this.frequencies[index].previous = this.frequencies[index].next.previous;
-                this.frequencies[index].next.previous = this.frequencies[index];
+            if (this.frequencies[freq].nextFreq !== undefined) {
+                this.frequencies[this.frequencies[freq].nextFreq!]!.previousFreq = this.frequencies[freq].previousFreq;
             }
         }
-        this.frequencies[index].count++;
-        if (!this.leastFrequent || index < this.leastFrequent.index) {
-            this.leastFrequent = this.frequencies[index];
-        }
-    }
-
-    private decreaseFrequency(index: number): void {
-        this.frequencies[index].count--;
-        if (!this.frequencies[index].count) {
-            if (this.frequencies[index].previous) {
-                this.frequencies[index].previous.next = this.frequencies[index].next;
-            }
-            if (this.frequencies[index].next) {
-                this.frequencies[index].next.previous = this.frequencies[index].previous;
-            }
-        }
-        if (!this.leastFrequent || !this.leastFrequent.count) {
-            this.leastFrequent = this.leastFrequent.next;
+        if (!this.leastFrequent || !this.frequencies[this.leastFrequent!].count) {
+            this.leastFrequent = this.frequencies[this.leastFrequent!]?.nextFreq;
         }
     }
 }

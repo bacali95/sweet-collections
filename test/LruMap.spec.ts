@@ -22,17 +22,17 @@ describe('Lru Map', () => {
         ]) {
             map.set(key, value);
         }
-        map.set(10, 100);
+        map.set(34, 340);
         expect<number>(map.size).toBe(5);
-        expect<[number, number][]>([...map[Symbol.iterator]()]).toStrictEqual([
+        expect<[number, number][]>([...map.entries()]).toStrictEqual([
             [34, 340],
-            [65, 650],
-            [59, 590],
-            [21, 210],
             [10, 100],
+            [21, 210],
+            [59, 590],
+            [65, 650],
         ]);
-        expect<number[]>([...map.keys()]).toStrictEqual([34, 65, 59, 21, 10]);
-        expect<number[]>([...map.values()]).toStrictEqual([340, 650, 590, 210, 100]);
+        expect<number[]>([...map.keys()]).toStrictEqual([34, 10, 21, 59, 65]);
+        expect<number[]>([...map.values()]).toStrictEqual([340, 100, 210, 590, 650]);
     });
 
     it('should get values by keys', () => {
@@ -116,11 +116,11 @@ describe('Lru Map', () => {
             map.set(key, value);
         }
         expect<[number, number][]>([...map.entries()]).toStrictEqual([
-            [34, 340],
-            [65, 650],
-            [59, 590],
-            [21, 210],
             [10, 100],
+            [21, 210],
+            [59, 590],
+            [65, 650],
+            [34, 340],
         ]);
     });
 

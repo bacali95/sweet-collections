@@ -1,0 +1,27 @@
+{
+  "name": "LfuMap",
+  "date": "2022-08-25T08:42:25.099Z",
+  "version": "1.0.0",
+  "results": [
+    {
+      "name": "CollectionsJS",
+      "ops": 154115,
+      "margin": 4.87,
+      "percentSlower": 96.16
+    },
+    {
+      "name": "SweetCollections",
+      "ops": 4010925,
+      "margin": 3.36,
+      "percentSlower": 0
+    }
+  ],
+  "fastest": {
+    "name": "SweetCollections",
+    "index": 1
+  },
+  "slowest": {
+    "name": "CollectionsJS",
+    "index": 0
+  }
+}

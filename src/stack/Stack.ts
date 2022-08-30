@@ -26,7 +26,7 @@ export class Stack<T> {
     }
 
     top(): T | undefined {
-        return this.head.value;
+        return this.head?.value;
     }
 
     isEmpty(): boolean {

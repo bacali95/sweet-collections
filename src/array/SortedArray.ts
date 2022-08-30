@@ -8,7 +8,7 @@ interface Node<T> {
 }
 
 export class SortedArray<T> {
-    private root: Node<T>;
+    private root: Node<T> | undefined;
     private readonly comparator: (a: T, b: T) => number;
     private readonly unique: boolean;
 
@@ -26,7 +26,7 @@ export class SortedArray<T> {
     }
 
     get(index: number): T | undefined {
-        if (index < 0 || index >= this.length) return undefined;
+        if (index < 0 || index >= this.length || !this.root) return undefined;
         let node = this.root;
         index++;
         while (true) {
@@ -39,7 +39,9 @@ export class SortedArray<T> {
             }
             if (index > 0 && index <= node.count) break;
             index -= node.count;
-            node = node.right;
+            if (node.right) {
+                node = node.right;
+            } else break;
         }
         return node.data;
     }
@@ -49,15 +51,15 @@ export class SortedArray<T> {
     }
 
     firstIndexOf(data: T): number {
-        return this.findIndex(data);
+        return this.findNodeIndex(data);
     }
 
     lastIndexOf(data: T): number {
-        return this.findIndex(data, true);
+        return this.findNodeIndex(data, true);
     }
 
     count(data: T): number {
-        return this.find(data)?.count ?? 0;
+        return this.findNode(data)?.count ?? 0;
     }
 
     includes(data: T): boolean {
@@ -120,7 +122,7 @@ export class SortedArray<T> {
         return max;
     }
 
-    private find(data: T): Node<T> | undefined {
+    private findNode(data: T): Node<T> | undefined {
         let node = this.root;
         let comp;
         while (node) {
@@ -136,7 +138,7 @@ export class SortedArray<T> {
         return undefined;
     }
 
-    private findIndex(data: T, last: boolean = false): number {
+    private findNodeIndex(data: T, last: boolean = false): number {
         let node = this.root;
         let index = 0;
         let comp;
@@ -164,12 +166,7 @@ export class SortedArray<T> {
 
     private _insert(data: T, node?: Node<T>): Node<T> {
         if (!node) {
-            return {
-                data: data,
-                height: 1,
-                count: 1,
-                nbrOfChildren: 0,
-            };
+            return { data, height: 1, count: 1, nbrOfChildren: 0 };
         }
         const comp = this.comparator(data, node.data);
         if (comp > 0) {
@@ -208,7 +205,7 @@ export class SortedArray<T> {
     }
 
     private rightRotate(node: Node<T>): Node<T> {
-        const aux = node.left;
+        const aux = node.left!;
         node.left = aux.right;
         aux.right = node;
 
@@ -220,7 +217,7 @@ export class SortedArray<T> {
     }
 
     private leftRotate(node: Node<T>): Node<T> {
-        const aux = node.right;
+        const aux = node.right!;
         node.right = aux.left;
         aux.left = node;
 
@@ -231,7 +228,7 @@ export class SortedArray<T> {
         return aux;
     }
 
-    private _delete(value: T, node: Node<T>, removed: boolean = false): Node<T> {
+    private _delete(value: T, node?: Node<T>, removed: boolean = false): Node<T> | undefined {
         if (!node) return node;
         const comp = this.comparator(value, node.data);
         if (comp < 0) {
@@ -246,7 +243,7 @@ export class SortedArray<T> {
                 } else if (!node.right) {
                     node = node.left;
                 } else {
-                    node.data = this._min(node.right);
+                    node.data = this._min(node.right)!;
                     node.count = node.right.count;
                     node.right = this._delete(node.right.data, node.right, true);
                 }
@@ -260,22 +257,32 @@ export class SortedArray<T> {
             return this.rightRotate(node);
         }
         if (balance > 1 && this.getBalance(node.left) < 0) {
-            node.left = this.leftRotate(node.left);
+            node.left = this.leftRotate(node.left!);
             return this.rightRotate(node);
         }
         if (balance < -1 && this.getBalance(node.right) <= 0) {
             return this.leftRotate(node);
         }
         if (balance < -1 && this.getBalance(node.right) > 0) {
-            node.right = this.rightRotate(node.right);
+            node.right = this.rightRotate(node.right!);
             return this.leftRotate(node);
         }
         return node;
     }
 
-    private _toArray(node: Node<T>): T[] {
+    private _toArray(node?: Node<T>): T[] {
         return node
             ? [...this._toArray(node.left), ...new Array(node.count).fill(node.data), ...this._toArray(node.right)]
             : [];
+    }
+
+    *[Symbol.iterator](): IterableIterator<T> {
+        for (const value of this.toArray()) {
+            yield value;
+        }
+    }
+
+    entries(): IterableIterator<[number, T]> {
+        return this.toArray().entries();
     }
 }

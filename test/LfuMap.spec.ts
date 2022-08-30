@@ -23,15 +23,15 @@ describe('Lfu Map', () => {
             map.set(key, value);
         }
         expect<number>(map.size).toBe(5);
-        expect<[number, number][]>([...map[Symbol.iterator]()]).toStrictEqual([
-            [34, 340],
-            [65, 650],
-            [59, 590],
-            [21, 210],
+        expect<[number, number][]>([...map.entries()]).toStrictEqual([
             [10, 100],
+            [21, 210],
+            [59, 590],
+            [65, 650],
+            [34, 340],
         ]);
-        expect<number[]>([...map.keys()]).toStrictEqual([34, 65, 59, 21, 10]);
-        expect<number[]>([...map.values()]).toStrictEqual([340, 650, 590, 210, 100]);
+        expect<number[]>([...map.keys()]).toStrictEqual([10, 21, 59, 65, 34]);
+        expect<number[]>([...map.values()]).toStrictEqual([100, 210, 590, 650, 340]);
     });
 
     it('should get values by keys', () => {
@@ -49,11 +49,11 @@ describe('Lfu Map', () => {
         ]) {
             map.set(key, value);
         }
-        expect<number>(map.get(10)).toBe(100);
-        expect<number>(map.get(45)).toBeUndefined();
-        expect<number>(map.get(65)).toBe(650);
-        expect<number>(map.get(98)).toBeUndefined();
-        expect<number>(map.get(11)).toBeUndefined();
+        expect(map.get(10)).toBe(100);
+        expect(map.get(45)).toBeUndefined();
+        expect(map.get(65)).toBe(650);
+        expect(map.get(98)).toBeUndefined();
+        expect(map.get(11)).toBeUndefined();
     });
 
     it('should has values by keys', () => {
@@ -150,11 +150,11 @@ describe('Lfu Map', () => {
             map.set(key, value);
         }
         expect<[number, number][]>([...map.entries()]).toStrictEqual([
-            [34, 340],
-            [65, 650],
-            [59, 590],
-            [21, 210],
             [10, 100],
+            [21, 210],
+            [59, 590],
+            [65, 650],
+            [34, 340],
         ]);
     });
 
@@ -173,7 +173,7 @@ describe('Lfu Map', () => {
         ]) {
             map.set(key, value);
         }
-        map.forEach((value, key, map) => expect<number>(map.get(key)).toBe(value));
+        map.forEach((value, key, map) => expect(map.get(key)).toBe(value));
     });
 
     it('should clear', () => {
@@ -197,18 +197,12 @@ describe('Lfu Map', () => {
         expect<[number, number][]>([...map.entries()]).toStrictEqual([]);
     });
 
-    it('should store nothing when limit is 0', () => {
-        const map = new LfuMap(0);
-        map.set(1, 1);
-        expect(map.has(1)).toBe(false);
-    });
-
     it('should throw error if passed limit is negative', () => {
         try {
             const map = new LfuMap(-1);
             map.get(1);
-        } catch (error) {
-            expect(error.message).toBe('Map size limit should positive.');
+        } catch (error: any) {
+            expect(error.message).toBe('Map size limit should be strictly positive.');
         }
     });
 });

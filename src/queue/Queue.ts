@@ -40,7 +40,7 @@ export class Queue<T> {
     }
 
     peek(): T | undefined {
-        return this.head.value;
+        return this.head?.value;
     }
 
     isEmpty(): boolean {

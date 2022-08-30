@@ -36,7 +36,7 @@ export class LruSet<T> implements Set<T> {
         this.map.clear();
     }
 
-    [Symbol.toStringTag]: string;
+    [Symbol.toStringTag]: string = 'LruSet';
 
     [Symbol.iterator](): IterableIterator<T> {
         return this.values();

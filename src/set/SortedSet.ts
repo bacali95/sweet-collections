@@ -39,7 +39,7 @@ export class SortedSet<T> implements Set<T> {
         this.array.clear();
     }
 
-    readonly [Symbol.toStringTag]: string;
+    [Symbol.toStringTag]: string = 'SortedSet';
 
     [Symbol.iterator](): IterableIterator<T> {
         return this.values();

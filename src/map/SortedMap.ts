@@ -1,20 +1,22 @@
 import { SortedArray } from '../array';
 
+type KeyValue<K, V> = { key: K; value: V };
+
 export class SortedMap<K, V> implements Map<K, V> {
-    private array: SortedArray<{ key: K; value: V }>;
+    private array: SortedArray<KeyValue<K, V>>;
     private readonly comparator: (a: K, b: K) => number;
 
     constructor(comparator: (a: K, b: K) => number) {
         this.comparator = comparator;
-        this.array = new SortedArray<{ key: K; value: V }>((a, b) => comparator(a.key, b.key), true);
+        this.array = new SortedArray((a, b) => comparator(a.key, b.key), true);
     }
 
     has(key: K): boolean {
-        return this.array.includes({ key: key, value: undefined });
+        return this.array.includes({ key } as KeyValue<K, V>);
     }
 
     get(key: K, _default?: V): V | undefined {
-        const index = this.array.firstIndexOf({ key: key, value: undefined });
+        const index = this.array.firstIndexOf({ key } as KeyValue<K, V>);
         return this.array.get(index)?.value ?? _default;
     }
 
@@ -24,7 +26,7 @@ export class SortedMap<K, V> implements Map<K, V> {
     }
 
     delete(key: K): boolean {
-        return this.array.delete({ key: key, value: undefined });
+        return this.array.delete({ key } as KeyValue<K, V>);
     }
 
     keys(): IterableIterator<K> {
@@ -52,7 +54,7 @@ export class SortedMap<K, V> implements Map<K, V> {
         this.array.clear();
     }
 
-    readonly [Symbol.toStringTag]: string;
+    [Symbol.toStringTag]: string = 'SortedMap';
 
     [Symbol.iterator](): IterableIterator<[K, V]> {
         return this.entries();
