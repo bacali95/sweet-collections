@@ -3,8 +3,8 @@ import { SortedArray } from '../array';
 export class SortedSet<T> implements Set<T> {
     private array: SortedArray<T>;
 
-    constructor(comparator: (a: T, b: T) => number) {
-        this.array = new SortedArray<T>(comparator, true);
+    constructor(comparator: (a: T, b: T) => number, unique: boolean = false) {
+        this.array = new SortedArray<T>(comparator, unique);
     }
 
     has(value: T): boolean {
